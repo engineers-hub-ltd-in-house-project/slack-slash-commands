@@ -2,14 +2,15 @@
 # -*- coding: utf-8 -*-
 
 import os
-import markdown
+import logging
+
+logger = logging.getLogger(__name__)
 
 def get_tft_anxiety_message():
     """
-    TFT不安解消の手順をマークダウンから読み込んで返す
+    TFT不安解消の手順を返す - Herokuでの実行を考慮
     """
     # マークダウンファイルのパスを取得
-    # 実行環境によって適切なパスを指定する必要があります
     current_dir = os.path.dirname(os.path.abspath(__file__))
     markdown_path = os.path.join(current_dir, '..', 'resources', 'tft_anxiety.md')
     
@@ -17,15 +18,20 @@ def get_tft_anxiety_message():
         # マークダウンファイルを読み込む
         with open(markdown_path, 'r', encoding='utf-8') as file:
             markdown_text = file.read()
-            
-        # Slackで表示するためのテキストとして返す
-        # markdownモジュールを使用してHTMLに変換することもできますが、
-        # Slackのマークダウン記法に合わせるなら、そのままのテキストでOK
-        return markdown_text
-        
+            logger.info(f"Successfully read markdown file from {markdown_path}")
+            return markdown_text
     except FileNotFoundError:
-        # ファイルが見つからない場合はハードコードされたメッセージを返す
-        return """# TFT 不安解消手順
+        logger.warning(f"Markdown file not found at {markdown_path}, using fallback text")
+        return get_fallback_text()
+    except Exception as e:
+        logger.error(f"Error reading markdown file: {str(e)}")
+        return get_fallback_text()
+
+def get_fallback_text():
+    """
+    フォールバックテキストを返す
+    """
+    return """# TFT 不安解消手順
 
 **＜1＞** 問題をひとつ思い浮かべます。
 

@@ -113,10 +113,18 @@ def tft_anxiety():
     
     logger.info("Sent TFT anxiety relief instructions")
     
-    # Slackへの応答
+    # Slackへの応答 - blocks形式を使用
     return jsonify({
-        "response_type": "ephemeral",  # ユーザーのみに表示
-        "text": message
+        "response_type": "ephemeral",
+        "blocks": [
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": message
+                }
+            }
+        ]
     })
 
 @app.route('/', methods=['GET'])
